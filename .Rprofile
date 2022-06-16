@@ -1,0 +1,31 @@
+# Portfolio Management .Rprofile file
+
+# Auto-load packages:
+# library(AER)
+library(broom)
+library(data.table)
+library(dynlm)
+library(fBasics)
+library(fGarch)
+library(FinCal)
+library(ggplot2)
+library(kableExtra)
+library(magrittr)
+library(MASS)
+library(matrixStats)
+library(quadprog)
+library(quantmod)
+library(RColorBrewer)
+library(reshape2)
+library(rmarkdown)
+library(stargazer)
+library(timeSeries)
+library(tseries)
+library(wesanderson)
+library(xtable)
+library(xts)
+library(tidyquant)
+library(tidyverse)
+
+# Set some of R options:
+options(prompt="R> ", scipen=999, digits=4, width=80)
