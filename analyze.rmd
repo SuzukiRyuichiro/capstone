@@ -1,4 +1,6 @@
-## Implementing Williamson's analysis of income disparity to 1980 ~ 2018 Japan
+## Implementing Williamson's analysis of income disparity to 1980 \~ 2018 Japan
+
+Getting prefectural income per capita data from the Cabinet Office "県民経済計算" <https://www.esri.cao.go.jp/jp/sna/sonota/kenmin/kenmin_top.html>
 
 ```{r}
 # ipc: income per capita
@@ -6,7 +8,7 @@
 clear_income_data <- function(file_path) {
   data_frame <- read_excel(file_path, sheet = "実数")
   colnames(data_frame) <- data_frame[1,] # rename the column names to gregoric years
-  data_frame <- data_frame[3:49,] # get the prefecture portion out (get rid of other measures)
+  data_frame <- data_frame[3:50,] # get the prefecture portion out (get rid of other measures)
   prefecture_names <- as.matrix(data_frame[,2]) # change the row names to prefecture names
   data_frame <- data_frame[,5:ncol(data_frame)-1] # get rid of unnecessary columns (prefecture number and stuff)
   rownames(data_frame) <- prefecture_names
@@ -16,5 +18,19 @@ clear_income_data <- function(file_path) {
 ipc_2006_2018 <- clear_income_data("data/一人あたりの県民所得 2006~2018.xlsx")
 ipc_1996_2009 <- clear_income_data("data/一人あたりの県民所得 1996~2009.xls")
 ipc_1990_2003 <- clear_income_data("data/一人あたりの県民所得 1990~2003.xls")
+```
+Getting Prefecture population from the Cabinet Office "県民経済計算" <https://www.esri.cao.go.jp/jp/sna/sonota/kenmin/kenmin_top.html>
+
+```{r}
+population_2006_2018 <- clear_income_data('data/総人口 2006~2018.xlsx')
+population_2001_2014 <- clear_income_data('data/総人口 2001~2014.xls')
+population_1990_2003 <- clear_income_data('data/総人口 1990~2003.xlsx')
+
+prefecture_names <- rownames(population_1990_2003)
+
+population_1990_2018 <- cbind(population_1990_2003[,1:11], population_2001_2014[,1:5] ,population_2006_2018)
+
+rownames(population_1990_2018) <- prefecture_names
+
 ```
 
