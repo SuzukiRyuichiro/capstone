@@ -18,6 +18,12 @@ clear_income_data <- function(file_path) {
 ipc_2006_2018 <- clear_income_data("data/一人あたりの県民所得 2006~2018.xlsx")
 ipc_1996_2009 <- clear_income_data("data/一人あたりの県民所得 1996~2009.xls")
 ipc_1990_2003 <- clear_income_data("data/一人あたりの県民所得 1990~2003.xls")
+
+prefecture_names <- rownames(ipc_1990_2003)
+
+ipc_1990_2018 <- cbind(ipc_1990_2003[,1:6], ipc_1996_2009[,1:11], ipc_2006_2018)
+
+rownames(ipc_1990_2018) <- prefecture_names
 ```
 Getting Prefecture population from the Cabinet Office "県民経済計算" <https://www.esri.cao.go.jp/jp/sna/sonota/kenmin/kenmin_top.html>
 
@@ -25,8 +31,6 @@ Getting Prefecture population from the Cabinet Office "県民経済計算" <http
 population_2006_2018 <- clear_income_data('data/総人口 2006~2018.xlsx')
 population_2001_2014 <- clear_income_data('data/総人口 2001~2014.xls')
 population_1990_2003 <- clear_income_data('data/総人口 1990~2003.xlsx')
-
-prefecture_names <- rownames(population_1990_2003)
 
 population_1990_2018 <- cbind(population_1990_2003[,1:11], population_2001_2014[,1:5] ,population_2006_2018)
 
