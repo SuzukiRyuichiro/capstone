@@ -1,0 +1,20 @@
+## Implementing Williamson's analysis of income disparity to 1980 ~ 2018 Japan
+
+```{r}
+# ipc: income per capita
+
+clear_income_data <- function(file_path) {
+  data_frame <- read_excel(file_path, sheet = "実数")
+  colnames(data_frame) <- data_frame[1,] # rename the column names to gregoric years
+  data_frame <- data_frame[3:49,] # get the prefecture portion out (get rid of other measures)
+  prefecture_names <- as.matrix(data_frame[,2]) # change the row names to prefecture names
+  data_frame <- data_frame[,5:ncol(data_frame)-1] # get rid of unnecessary columns (prefecture number and stuff)
+  rownames(data_frame) <- prefecture_names
+  return(data_frame)
+}
+
+ipc_2006_2018 <- clear_income_data("data/一人あたりの県民所得 2006~2018.xlsx")
+ipc_1996_2009 <- clear_income_data("data/一人あたりの県民所得 1996~2009.xls")
+ipc_1990_2003 <- clear_income_data("data/一人あたりの県民所得 1990~2003.xls")
+```
+
