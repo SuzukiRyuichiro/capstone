@@ -36,15 +36,32 @@ population_1990_2003 <- clear_income_data('data/総人口 1990~2003.xlsx')
 population_1990_2018 <- cbind(population_1990_2003[,1:11], population_2001_2014[,1:5] ,population_2006_2018)
 
 rownames(population_1990_2018) <- prefecture_names
-
 ```
 
-Calculating Williamson's Vw index, which ought to measure the income disparity of the country
+Organizing GDP data
+```{r}
+gdp_data <- read_excel('data/GDP data of countries.xls', sheet = 'Data')
+colnames(gdp_data) <- gdp_data[3,]
+japan <- gdp_data[123,]
+```
+
+Calculating Williamson's inequality measure, which ought to measure the income disparity of the country
 
 $$
 \frac{\sqrt{\sum_{i}(y_i - \bar y)^2 * \frac{f_i}{n}}}{\bar y}\\
-\bar y = national\ income\ per\ capita\\
-y_i = income\ per\ capita\ of\ the\ ith\ prefecture\\
-f_i = population\ of\ the\ ith\ prefecture\\
-n = population\ of\ Japan
+\bar y = \text{national incomeper capita}\\
+y_i = \text{income per capita of the ith prefecture}\\
+f_i = \text{population of the ith prefecture}\\
+n = \text{population of Japan}\\
+$$
+
+Estimation model from Marius Brülhart Federica Sbergami (2008)
+
+$$
+g_{p} = \alpha y_{p} + \beta A_{p} + u_p\\
+
+g_p = \text{average GDP growth of Japan over period p}\\
+y_p = \text{log initial GDP of that period}\\
+A_p = \text{primacy at the beginning of the period}\\
+u_p = \text{error term}
 $$
