@@ -25,6 +25,7 @@ ipc_1990_2018 <- cbind(ipc_1990_2003[,1:6], ipc_1996_2009[,1:11], ipc_2006_2018)
 
 rownames(ipc_1990_2018) <- prefecture_names
 ```
+
 Getting Prefecture population from the Cabinet Office "県民経済計算" <https://www.esri.cao.go.jp/jp/sna/sonota/kenmin/kenmin_top.html>
 
 ```{r}
@@ -38,3 +39,12 @@ rownames(population_1990_2018) <- prefecture_names
 
 ```
 
+Calculating Williamson's Vw index, which ought to measure the income disparity of the country
+
+$$
+\frac{\sqrt{\sum_{i}(y_i - \bar y)^2 * \frac{f_i}{n}}}{\bar y}\\
+\bar y = national\ income\ per\ capita\\
+y_i = income\ per\ capita\ of\ the\ ith\ prefecture\\
+f_i = population\ of\ the\ ith\ prefecture\\
+n = population\ of\ Japan
+$$
