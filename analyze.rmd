@@ -4,14 +4,14 @@ Getting prefectural income per capita data from the Cabinet Office "県民経済
 
 ```{r}
 # ipc: income per capita
-
+library(readxl)
 clear_income_data <- function(file_path) {
   data_frame <- read_excel(file_path, sheet = "実数")
   colnames(data_frame) <- data_frame[1,] # rename the column names to gregoric years
   data_frame <- data_frame[3:50,] # get the prefecture portion out (get rid of other measures)
   prefecture_names <- as.matrix(data_frame[,2]) # change the row names to prefecture names
   data_frame <- data_frame[,5:ncol(data_frame)-1] # get rid of unnecessary columns (prefecture number and stuff)
-  rownames(data_frame) <- prefecture_names
+  row.names(data_frame) <- prefecture_names
   return(data_frame)
 }
 
@@ -23,7 +23,7 @@ prefecture_names <- rownames(ipc_1990_2003)
 
 ipc_1990_2018 <- cbind(ipc_1990_2003[,1:6], ipc_1996_2009[,1:11], ipc_2006_2018)
 
-rownames(ipc_1990_2018) <- prefecture_names
+row.names(ipc_1990_2018) <- prefecture_names
 ```
 
 Getting Prefecture population from the Cabinet Office "県民経済計算" <https://www.esri.cao.go.jp/jp/sna/sonota/kenmin/kenmin_top.html>
@@ -35,7 +35,14 @@ population_1990_2003 <- clear_income_data('data/総人口 1990~2003.xlsx')
 
 population_1990_2018 <- cbind(population_1990_2003[,1:11], population_2001_2014[,1:5] ,population_2006_2018)
 
-rownames(population_1990_2018) <- prefecture_names
+# deal with some character values
+population_1990_2018 <- as.data.frame(lapply(population_1990_2018, function(x) as.numeric(as.character(x))))
+population_1990_2018 <- t(population_1990_2018)
+
+colnames(population_1990_2018) <- prefecture_names
+population_1990_2018 <- as.data.frame(population_1990_2018)
+
+population_1990_2018$year <- row.names(population_1990_2018) %>% map(function(x) as.numeric(substring(x, 2)))
 ```
 
 Organizing GDP data
@@ -65,3 +72,30 @@ y_p = \text{log initial GDP of that period}\\
 A_p = \text{primacy at the beginning of the period}\\
 u_p = \text{error term}
 $$
+
+## Primacy
+```{r}
+shutoken <- c('東京都', '千葉県', '神奈川県', '埼玉県', '茨城県', '栃木県', '群馬県', '山梨県')
+kanto <- c('東京都', '千葉県', '神奈川県', '埼玉県', '茨城県', '栃木県', '群馬県')
+
+# Add a row for shutoken
+population_1990_2018[,ncol(population_1990_2018) + 1] <- rowSums(population_1990_2018[,shutoken])
+colnames(population_1990_2018)[colnames(population_1990_2018) == paste('V', as.character(ncol(population_1990_2018)))] <- '首都圏'
+
+# Add a row for kanto
+population_1990_2018[nrow(population_1990_2018) + 1,]<- colSums(population_1990_2018[kanto,])
+colnames(population_1990_2018)[colnames(population_1990_2018) == as.character(ncol(population_1990_2018))] <- '関東'
+
+# primacy
+primacy <- t(population_1990_2018['首都圏',] / population_1990_2018['全県計',])
+primacy <- cbind(primacy, t(population_1990_2018['東京都',] / population_1990_2018['全県計',]))
+primacy <- cbind(primacy, t(population_1990_2018['関東',] / population_1990_2018['全県計',]))
+
+primacy <- data.frame(primacy)
+colnames(primacy) <- c('Shutoken Primacy', 'Tokyo Primacy', 'Kanto Primacy')
+
+primacy$year <- row.names(primacy)
+primacy$year <- 
+library(ggplot2)
+```
+
