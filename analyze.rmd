@@ -80,11 +80,11 @@ kanto <- c('東京都', '千葉県', '神奈川県', '埼玉県', '茨城県', '
 
 # Add a row for shutoken
 population_1990_2018[,ncol(population_1990_2018) + 1] <- rowSums(population_1990_2018[,shutoken])
-colnames(population_1990_2018)[colnames(population_1990_2018) == paste('V', as.character(ncol(population_1990_2018)))] <- '首都圏'
+colnames(population_1990_2018)[ncol(population_1990_2018)] <- '首都圏'
 
 # Add a row for kanto
-population_1990_2018[nrow(population_1990_2018) + 1,]<- colSums(population_1990_2018[kanto,])
-colnames(population_1990_2018)[colnames(population_1990_2018) == as.character(ncol(population_1990_2018))] <- '関東'
+population_1990_2018[,ncol(population_1990_2018) + 1]<- rowSums(population_1990_2018[,kanto])
+colnames(population_1990_2018)[ncol(population_1990_2018)] <- '関東'
 
 # primacy
 primacy <- t(population_1990_2018['首都圏',] / population_1990_2018['全県計',])
