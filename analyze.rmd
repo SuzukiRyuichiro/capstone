@@ -41,8 +41,9 @@ population_1990_2018 <- t(population_1990_2018)
 
 colnames(population_1990_2018) <- prefecture_names
 population_1990_2018 <- as.data.frame(population_1990_2018)
+test <- row.names(population_1990_2018) %>% map(function(x) as.numeric(substring(x, 2)))
 
-population_1990_2018$year <- row.names(population_1990_2018) %>% map(function(x) as.numeric(substring(x, 2)))
+population_1990_2018$year <- 1990:2018
 ```
 
 Organizing GDP data
@@ -87,15 +88,36 @@ population_1990_2018[,ncol(population_1990_2018) + 1]<- rowSums(population_1990_
 colnames(population_1990_2018)[ncol(population_1990_2018)] <- '関東'
 
 # primacy
-primacy <- t(population_1990_2018['首都圏',] / population_1990_2018['全県計',])
-primacy <- cbind(primacy, t(population_1990_2018['東京都',] / population_1990_2018['全県計',]))
-primacy <- cbind(primacy, t(population_1990_2018['関東',] / population_1990_2018['全県計',]))
+primacy <- population_1990_2018[,'首都圏'] / population_1990_2018[,'全県計']
+primacy <- cbind(primacy, population_1990_2018[,'東京都'] / population_1990_2018[,'全県計'])
+primacy <- cbind(primacy, population_1990_2018[,'関東'] / population_1990_2018[,'全県計'])
+primacy <- cbind(primacy, population_1990_2018[,'year'])
 
 primacy <- data.frame(primacy)
-colnames(primacy) <- c('Shutoken Primacy', 'Tokyo Primacy', 'Kanto Primacy')
+colnames(primacy) <- c('Shutoken Primacy', 'Tokyo Primacy', 'Kanto Primacy', 'year')
 
-primacy$year <- row.names(primacy)
-primacy$year <- 
+primacy
 library(ggplot2)
+```
+
+## Getting GDP from FRED
+gdp in billions of chained 2015 yen from 1994 to 2021
+```{r}
+jpn_rgdp <- read_excel('data/JPNRGDPEXP.xls')
+
+jpn_rgdp <- as.data.frame(cbind(1994:2021, colMeans(matrix(jpn_rgdp$JPNRGDPEXP, nrow=4))))
+
+jpn_rgdp[,1]
+colnames(jpn_rgdp) <- c('yaer', 'average real GDP of the year')
+jpn_rgdp_xts <- xts(jpn_rgdp[,-1], order.by=as.Date(as.character(jpn_rgdp[,1]), "%Y"))
+yearly_diff <- diff(jpn_rgdp_xts, lag = 1)
+lagged <- jpn_rgdp_xts
+index(lagged) <- index(lagged) %m+% years(1)
+library(lubridate)
+yearly_diff <- cbind(yearly_diff, lagged)
+yearly_diff$growth <- yearly_diff$yearly_diff / yearly_diff$lagged
+
+growth_rate <- na.omit(yearly_diff$growth)
+log_gdp <- log(jpn_rgdp_xts)
 ```
 
